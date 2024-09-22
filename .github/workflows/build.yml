@@ -31,15 +31,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget unzip
-          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-sdk.zip
+          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O commandlinetools.zip
           mkdir -p $HOME/android-sdk/cmdline-tools
-          unzip android-sdk.zip -d $HOME/android-sdk/cmdline-tools
+          unzip commandlinetools.zip -d $HOME/android-sdk/cmdline-tools
           mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platforms;android-31" "platform-tools" "build-tools;31.0.0"
           echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
-          echo "export PATH=$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
-          
+          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+
       - name: Pre-configure Bubblewrap
         run: |
           mkdir -p ~/.bubblewrap
@@ -47,7 +46,7 @@ jobs:
             "jdkPath": "/opt/hostedtoolcache/Java_Zulu_jdk/17.0.12-7/x64",
             "androidSdkPath": "'$HOME'/android-sdk"
           }' > ~/.bubblewrap/config.json
-      
+
       - name: Build APK
         env:
           KEYSTORE_PASSWORD: qwerty
