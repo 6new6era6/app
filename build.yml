@@ -3,7 +3,7 @@ name: Build and Release APK
 on:
   push:
     branches:
-      - main
+      - main  # Замініть на вашу основну гілку, якщо вона інша
 
 jobs:
   build:
@@ -39,7 +39,7 @@ jobs:
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH" >> $GITHUB_ENV
 
-      - name: Create Temporary Manifest File
+      - name: Create Bubblewrap Manifest File
         run: |
           echo '{
             "manifestUrl": "https://formidable.bond/app/manifest.json",
@@ -55,14 +55,20 @@ jobs:
             "signing": {
               "keystore": "signing.keystore",
               "alias": "android",
-              "storePasswordEnv": "KEYSTORE_PASSWORD",
-              "keyPasswordEnv": "KEY_PASSWORD"
+              "storePasswordEnv": "qwerty",
+              "keyPasswordEnv": "qwerty"
             }
           }' > twa-manifest.json
 
       - name: Initialize Bubblewrap
         run: |
           bubblewrap init --manifest=twa-manifest.json
+
+      - name: Verify Android SDK Structure
+        run: |
+          ls -R $HOME/android-sdk
+          ls -R $HOME/android-sdk/cmdline-tools/latest
+          ls -R $HOME/android-sdk/platform-tools
 
       - name: Build APK
         env:
