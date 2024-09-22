@@ -3,7 +3,7 @@ name: Build and Release APK
 on:
   push:
     branches:
-      - app  # Замініть на вашу основну гілку, якщо вона відрізняється
+      - main  # Замініть на вашу основну гілку, якщо вона відрізняється
 
 jobs:
   build:
