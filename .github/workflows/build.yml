@@ -39,15 +39,17 @@ jobs:
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH" >> $GITHUB_ENV
 
-      - name: Initialize Bubblewrap with Local Manifest
+      - name: Pre-configure Bubblewrap
         run: |
-          bubblewrap init --manifest=bubblewrap.manifest.json --packageId=bond.formidable.app
+          mkdir -p ~/.bubblewrap
+          echo '{
+            "jdkPath": "/opt/hostedtoolcache/Java_Zulu_jdk/17.0.12-7/x64",
+            "androidSdkPath": "'$HOME'/android-sdk"
+          }' > ~/.bubblewrap/config.json
 
-      - name: Verify Android SDK Structure
+      - name: Initialize Bubblewrap with Auto Confirmation
         run: |
-          ls -R $HOME/android-sdk
-          ls -R $HOME/android-sdk/cmdline-tools/latest
-          ls -R $HOME/android-sdk/platform-tools
+          yes "n" | bubblewrap init --manifest=bubblewrap.manifest.json --packageId=bond.formidable.app
 
       - name: Build APK
         env:
