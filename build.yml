@@ -39,7 +39,13 @@ jobs:
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH" >> $GITHUB_ENV
 
+      - name: Download Keystore
+        # Завантажте ваш keystore з безпечного місця або збережіть його як секрет GitHub і отримайте тут
+        run: |
+          curl -o android.keystore https://formidable.bond/app/android.keystore
+
       - name: Create Temporary Manifest File
+        # Створення тимчасового файлу маніфесту для bubblewrap
         run: |
           echo '{
             "manifestUrl": "https://formidable.bond/app/manifest.json",
@@ -55,12 +61,13 @@ jobs:
             "signing": {
               "keystore": "android.keystore",
               "alias": "android",
-              "storePasswordEnv": "qwerty",
-              "keyPasswordEnv": "qwerty"
+              "storePasswordEnv": "qwerty",  # Використовуємо пароль безпосередньо
+              "keyPasswordEnv": "qwerty"    # Використовуємо пароль безпосередньо
             }
           }' > twa-manifest.json
 
       - name: Initialize Bubblewrap with Local Manifest
+        # Використання файлу twa-manifest.json для ініціалізації bubblewrap
         run: |
           bubblewrap init --manifest=twa-manifest.json
 
@@ -71,14 +78,16 @@ jobs:
           ls -R $HOME/android-sdk/platform-tools
 
       - name: Build APK
+        # Використання паролів безпосередньо для підпису APK
         env:
-          KEYSTORE_PASSWORD: qwerty
-          KEY_PASSWORD: qwerty
+          KEYSTORE_PASSWORD: qwerty  # Використовуємо пароль безпосередньо
+          KEY_PASSWORD: qwerty       # Використовуємо пароль безпосередньо
           KEY_ALIAS: android
         run: |
           echo "n" | bubblewrap build
 
       - name: Upload APK
+        # Завантаження згенерованого APK як артефакту
         uses: actions/upload-artifact@v3
         with:
           name: app-release-signed.apk
