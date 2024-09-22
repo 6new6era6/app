@@ -1,0 +1,18 @@
+{
+  "manifestUrl": "https://formidable.bond/app/manifest.json",
+  "packageId": "bond.formidable.app",
+  "host": "formidable.bond",
+  "name": "💸X🚀",
+  "launcherName": "💸X🚀",
+  "startUrl": "/",
+  "themeColor": "#007aff",
+  "navigationColor": "#000000",
+  "backgroundColor": "#ffffff",
+  "enableNotifications": true,
+  "signing": {
+    "keystore": "signing.keystore",
+    "alias": "android",
+    "storePasswordEnv": "qwerty",
+    "keyPasswordEnv": "qwerty"
+  }
+}
