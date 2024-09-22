@@ -10,7 +10,7 @@
   "backgroundColor": "#ffffff",
   "enableNotifications": true,
   "signing": {
-    "keystore": "signing.keystore",
+    "keystore": "android.keystore",
     "alias": "android",
     "storePasswordEnv": "qwerty",
     "keyPasswordEnv": "qwerty"
