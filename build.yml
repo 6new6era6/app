@@ -3,7 +3,7 @@ name: Build and Release APK
 on:
   push:
     branches:
-      - main  # Замініть на вашу основну гілку, якщо вона інша
+      - main
 
 jobs:
   build:
@@ -39,6 +39,7 @@ jobs:
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH" >> $GITHUB_ENV
 
+      # Створення twa-manifest.json у кореневій директорії
       - name: Create Bubblewrap Manifest File
         run: |
           echo '{
@@ -53,14 +54,15 @@ jobs:
             "backgroundColor": "#ffffff",
             "enableNotifications": true,
             "signing": {
-              "keystore": "signing.keystore",
+              "keystore": "android.keystore",
               "alias": "android",
               "storePasswordEnv": "qwerty",
               "keyPasswordEnv": "qwerty"
             }
           }' > twa-manifest.json
 
-      - name: Initialize Bubblewrap
+      # Використання локального файлу twa-manifest.json
+      - name: Initialize Bubblewrap with Local Manifest
         run: |
           bubblewrap init --manifest=twa-manifest.json
 
