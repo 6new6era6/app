@@ -49,7 +49,7 @@ jobs:
 
       - name: Initialize Bubblewrap with Local Manifest
         run: |
-          bubblewrap init --manifest=file://$PWD/bubblewrap.manifest.json --packageId=bond.formidable.app
+          bubblewrap init --manifest=bubblewrap.manifest.json --packageId=bond.formidable.app
 
       - name: Verify Android SDK Structure
         run: |
