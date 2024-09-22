@@ -27,14 +27,25 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Accept Android SDK licenses
-        run: yes | sdkmanager --licenses || true
-
+      - name: Install Android SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip
+          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O android-sdk.zip
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          unzip android-sdk.zip -d $HOME/android-sdk/cmdline-tools
+          mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
+          echo "export PATH=$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+          
       - name: Pre-configure Bubblewrap
         run: |
           mkdir -p ~/.bubblewrap
           echo '{
-            "jdkPath": "/opt/hostedtoolcache/Java_Zulu_jdk/17.0.12-7/x64"
+            "jdkPath": "/opt/hostedtoolcache/Java_Zulu_jdk/17.0.12-7/x64",
+            "androidSdkPath": "'$HOME'/android-sdk"
           }' > ~/.bubblewrap/config.json
       
       - name: Build APK
