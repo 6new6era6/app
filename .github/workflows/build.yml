@@ -47,9 +47,15 @@ jobs:
             "androidSdkPath": "'$HOME'/android-sdk"
           }' > ~/.bubblewrap/config.json
 
-      - name: Initialize Bubblewrap with Auto Confirmation
+      - name: Initialize Bubblewrap with Local Manifest
         run: |
-          yes "n" | bubblewrap init --manifest=bubblewrap.manifest.json --packageId=bond.formidable.app
+          bubblewrap init --manifest=file://$PWD/bubblewrap.manifest.json --packageId=bond.formidable.app
+
+      - name: Verify Android SDK Structure
+        run: |
+          ls -R $HOME/android-sdk
+          ls -R $HOME/android-sdk/cmdline-tools/latest
+          ls -R $HOME/android-sdk/platform-tools
 
       - name: Build APK
         env:
