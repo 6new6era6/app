@@ -3,7 +3,7 @@ name: Build and Release APK
 on:
   push:
     branches:
-      - main  # Замініть на вашу основну гілку, якщо вона відрізняється
+      - main  # Замініть на вашу основну гілку, якщо вона інша
 
 jobs:
   build:
@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-
+      
       - name: Install Bubblewrap
         run: npm install -g @bubblewrap/cli
 
@@ -27,13 +27,23 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Pre-configure Bubblewrap
+        run: |
+          mkdir -p ~/.bubblewrap
+          echo '{
+            "jdkPath": "/opt/hostedtoolcache/Java_Zulu_jdk/17.0.12-7/x64"
+          }' > ~/.bubblewrap/config.json
+      
       - name: Build APK
         env:
           KEYSTORE_PASSWORD: qwerty
           KEY_PASSWORD: qwerty
           KEY_ALIAS: android
         run: |
-          bubblewrap build
+          echo "n" | bubblewrap build
 
       - name: Upload APK
         uses: actions/upload-artifact@v3
