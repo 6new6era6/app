@@ -55,8 +55,8 @@ jobs:
             "signing": {
               "keystore": "android.keystore",
               "alias": "android",
-              "storePasswordEnv": "KEYSTORE_PASSWORD",
-              "keyPasswordEnv": "KEY_PASSWORD"
+              "storePasswordEnv": "qwerty",
+              "keyPasswordEnv": "qwerty"
             }
           }' > twa-manifest.json
 
