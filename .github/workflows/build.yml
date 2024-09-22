@@ -29,9 +29,9 @@ jobs:
 
       - name: Build APK
         env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEYSTORE_PASSWORD: qwerty
+          KEY_PASSWORD: qwerty
+          KEY_ALIAS: android
         run: |
           bubblewrap build
 
