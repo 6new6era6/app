@@ -39,28 +39,47 @@ jobs:
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH" >> $GITHUB_ENV
 
-      - name: Download Keystore
-        # Завантажте ваш keystore з безпечного місця або збережіть його як секрет GitHub і отримайте тут
+      - name: Create Temporary Manifest File
         run: |
-          curl -o android.keystore https://formidable.bond/app/android.keystore
+          echo '{
+            "manifestUrl": "https://formidable.bond/app/manifest.json",
+            "packageId": "bond.formidable.app",
+            "host": "formidable.bond",
+            "name": "💸X🚀",
+            "launcherName": "💸X🚀",
+            "startUrl": "/",
+            "themeColor": "#007aff",
+            "navigationColor": "#000000",
+            "backgroundColor": "#ffffff",
+            "enableNotifications": true,
+            "signing": {
+              "keystore": "android.keystore",
+              "alias": "android",
+              "storePasswordEnv": "KEYSTORE_PASSWORD",
+              "keyPasswordEnv": "KEY_PASSWORD"
+            }
+          }' > twa-manifest.json
 
-      - name: Initialize Bubblewrap
-        # Використання Bubblewrap для створення WebAPK на основі вашого маніфесту
+      - name: Initialize Bubblewrap with Local Manifest
         run: |
-          bubblewrap init --manifest=https://formidable.bond/app/manifest.json --packageId=bond.formidable.app
+          bubblewrap init --manifest=twa-manifest.json
 
-      - name: Build WebAPK
-        # Створення WebAPK із використанням збереженого keystore
+      - name: Verify Android SDK Structure
+        run: |
+          ls -R $HOME/android-sdk
+          ls -R $HOME/android-sdk/cmdline-tools/latest
+          ls -R $HOME/android-sdk/platform-tools
+
+      - name: Build APK
         env:
           KEYSTORE_PASSWORD: qwerty
           KEY_PASSWORD: qwerty
           KEY_ALIAS: android
         run: |
-          bubblewrap build --skipPwaValidation
+          echo "n" | bubblewrap build
 
       - name: Upload APK
-        # Завантаження згенерованого WebAPK як артефакту
         uses: actions/upload-artifact@v3
         with:
-          name: webapk-release-signed.apk
+          name: app-release-signed.apk
           path: ./output/app-release-signed.apk
