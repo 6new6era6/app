@@ -31,25 +31,18 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget unzip
-          # Завантаження інструментів командного рядка Android SDK
           wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O commandlinetools.zip
           mkdir -p $HOME/android-sdk/cmdline-tools
           unzip commandlinetools.zip -d $HOME/android-sdk/cmdline-tools
           mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
-          # Завантаження платформ і інструментів Android SDK
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platforms;android-31" "platform-tools" "build-tools;31.0.0"
-          # Встановлення змінних оточення для Android SDK
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH" >> $GITHUB_ENV
 
-      - name: Pre-configure Bubblewrap
+      - name: Initialize Bubblewrap with Local Manifest
         run: |
-          mkdir -p ~/.bubblewrap
-          echo '{
-            "jdkPath": "/opt/hostedtoolcache/Java_Zulu_jdk/17.0.12-7/x64",
-            "androidSdkPath": "'$HOME'/android-sdk"
-          }' > ~/.bubblewrap/config.json
-      
+          bubblewrap init --manifest=bubblewrap.manifest.json --packageId=bond.formidable.app
+
       - name: Verify Android SDK Structure
         run: |
           ls -R $HOME/android-sdk
@@ -62,7 +55,6 @@ jobs:
           KEY_PASSWORD: qwerty
           KEY_ALIAS: android
         run: |
-          bubblewrap init --manifest=https://your-site.com/manifest.json --packageId=com.example.yourapp
           echo "n" | bubblewrap build
 
       - name: Upload APK
