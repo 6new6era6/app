@@ -1,9 +1,9 @@
-name: Build and Release APK
+name: Build WebAPK
 
 on:
   push:
     branches:
-      - main
+      - main  # Замініть на вашу основну гілку, якщо вона інша
 
 jobs:
   build:
@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      
+
       - name: Install Bubblewrap
         run: npm install -g @bubblewrap/cli
 
@@ -39,49 +39,28 @@ jobs:
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$PATH" >> $GITHUB_ENV
 
-      # Створення twa-manifest.json у кореневій директорії
-      - name: Create Bubblewrap Manifest File
+      - name: Download Keystore
+        # Завантажте ваш keystore з безпечного місця або збережіть його як секрет GitHub і отримайте тут
         run: |
-          echo '{
-            "manifestUrl": "https://formidable.bond/app/manifest.json",
-            "packageId": "bond.formidable.app",
-            "host": "formidable.bond",
-            "name": "💸X🚀",
-            "launcherName": "💸X🚀",
-            "startUrl": "/",
-            "themeColor": "#007aff",
-            "navigationColor": "#000000",
-            "backgroundColor": "#ffffff",
-            "enableNotifications": true,
-            "signing": {
-              "keystore": "android.keystore",
-              "alias": "android",
-              "storePasswordEnv": "qwerty",
-              "keyPasswordEnv": "qwerty"
-            }
-          }' > twa-manifest.json
+          curl -o android.keystore https://formidable.bond/app/android.keystore
 
-      # Використання локального файлу twa-manifest.json
-      - name: Initialize Bubblewrap with Local Manifest
+      - name: Initialize Bubblewrap
+        # Використання Bubblewrap для створення WebAPK на основі вашого маніфесту
         run: |
-          bubblewrap init --manifest=twa-manifest.json
+          bubblewrap init --manifest=https://formidable.bond/app/manifest.json --packageId=bond.formidable.app
 
-      - name: Verify Android SDK Structure
-        run: |
-          ls -R $HOME/android-sdk
-          ls -R $HOME/android-sdk/cmdline-tools/latest
-          ls -R $HOME/android-sdk/platform-tools
-
-      - name: Build APK
+      - name: Build WebAPK
+        # Створення WebAPK із використанням збереженого keystore
         env:
           KEYSTORE_PASSWORD: qwerty
           KEY_PASSWORD: qwerty
           KEY_ALIAS: android
         run: |
-          echo "n" | bubblewrap build
+          bubblewrap build --skipPwaValidation
 
       - name: Upload APK
+        # Завантаження згенерованого WebAPK як артефакту
         uses: actions/upload-artifact@v3
         with:
-          name: app-release-signed.apk
-          path: ./build/output/app-release-signed.apk
+          name: webapk-release-signed.apk
+          path: ./output/app-release-signed.apk
